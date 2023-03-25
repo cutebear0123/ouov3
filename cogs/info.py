@@ -1,11 +1,11 @@
-import discord,json,os
-from discord.ext import commands
+import discord
 from discord.commands import Option
-from discord.commands import slash_command
+from discord.ext import commands
+
 
 class Info(commands.Cog):
-    def __init__(self,bot):
-        self.bot=bot
+    def __init__(self, bot):
+        self.bot = bot
 
     info = discord.SlashCommandGroup(
         "info",
@@ -15,16 +15,17 @@ class Info(commands.Cog):
     )
 
     @info.command(descrtiption="查看機器人資訊")
-    async def bot(self,ctx):
+    async def bot(self, ctx):
         pass
 
     @info.command(description="查詢用戶資訊")
-    async def user(self,ctx,用戶:Option(discord.User,"要查詢的用戶")):
+    async def user(self, ctx, 用戶: Option(discord.User, "要查詢的用戶")):
         pass
 
     @info.command(description="查詢群組資訊")
-    async def guild(self,ctx):
+    async def guild(self, ctx):
         pass
 
-def setup (bot):
+
+def setup(bot):
     bot.add_cog(Info(bot))
