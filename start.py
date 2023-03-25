@@ -1,5 +1,6 @@
-import discord
 import json
+
+import discord
 
 intents = discord.Intents.default()
 intents.members = True
