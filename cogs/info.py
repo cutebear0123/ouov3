@@ -19,7 +19,7 @@ class Info(commands.Cog):
     def __init__(self, bot: discord.AutoShardedBot) -> None:
         self.bot = bot
 
-    info = discord.SlashCommandGroup("info", "查詢資訊", dm_permission=False)
+    info = discord.SlashCommandGroup("info", "查詢資訊", guild_only=True)
 
     @info.command(
         descrtiption="View bot information",
@@ -75,7 +75,7 @@ class Info(commands.Cog):
         name_localizations={"zh-TW": "用戶資訊", "zh-CN": "用户信息"},
         description="View user information",
         description_localizations={"zh-TW": "查看用戶資訊", "zh-CN": "查看用户信息"},
-        dm_permission=False,
+        guild_only=True,
     )
     async def user_command(
         self, ctx: discord.ApplicationContext, user: Union[discord.Member, discord.User] = None
