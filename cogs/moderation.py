@@ -3,10 +3,19 @@ from enum import Enum
 from typing import Union
 
 import discord.ui
-from discord import Bot, Interaction, SlashCommandOptionType, Member, User, Embed, InputTextStyle, option, \
-    default_permissions
+from discord import (
+    AutoShardedBot,
+    Embed,
+    InputTextStyle,
+    Interaction,
+    Member,
+    SlashCommandOptionType,
+    User,
+    default_permissions,
+    option,
+)
 from discord.ext import commands
-from discord.ui import Modal, InputText
+from discord.ui import InputText, Modal
 
 
 class ReasonModalActionType(Enum):
@@ -19,13 +28,7 @@ class ReasonModal(Modal):
         self.user = user
         self.action_type = action_type
 
-        super().__init__(
-            InputText(
-                label="動作原因",
-                style=InputTextStyle.long
-            ),
-            title="管理操作"
-        )
+        super().__init__(InputText(label="動作原因", style=InputTextStyle.long), title="管理操作")
 
     async def callback(self, interaction: Interaction):
         if self.action_type == ReasonModalActionType.BAN:
@@ -35,8 +38,7 @@ class ReasonModal(Modal):
             await interaction.guild.kick(self.user, reason=self.children[0].value)
 
         await interaction.response.send_message(
-            f"✅ 成功{self.action_type.value} {self.user.__str__()}",
-            ephemeral=True
+            f"✅ 成功{self.action_type.value} {self.user.__str__()}", ephemeral=True
         )
 
 
@@ -45,16 +47,13 @@ class TimeoutModal(Modal):
         self.user = user
 
         super().__init__(
-            InputText(
-                label="動作原因",
-                style=InputTextStyle.long
-            ),
+            InputText(label="動作原因", style=InputTextStyle.long),
             InputText(
                 label="時間 (秒)",
                 style=InputTextStyle.short,
-                placeholder="60 - 一分鐘 | 3600 - 一小時 | 86400 - 一天 | 604800 - 一週"
+                placeholder="60 - 一分鐘 | 3600 - 一小時 | 86400 - 一天 | 604800 - 一週",
             ),
-            title="管理操作"
+            title="管理操作",
         )
 
     async def callback(self, interaction: Interaction):
@@ -63,8 +62,7 @@ class TimeoutModal(Modal):
         await self.user.timeout(until_time, reason=self.children[0].value)
 
         await interaction.response.send_message(
-            f"✅ 成功禁言 {self.user.__str__()} {int(self.children[1].value)} 秒",
-            ephemeral=True
+            f"✅ 成功禁言 {self.user.__str__()} {int(self.children[1].value)} 秒", ephemeral=True
         )
 
 
@@ -72,9 +70,7 @@ class ModerationView(discord.ui.View):
     def __init__(self, user: Union[Member, User]):
         self.user = user
 
-        super().__init__(
-            timeout=180
-        )
+        super().__init__(timeout=180)
 
     @discord.ui.button(label="封鎖", style=discord.ButtonStyle.red)
     async def ban(self, button: discord.ui.Button, interaction: Interaction):
@@ -100,7 +96,7 @@ class ModerationView(discord.ui.View):
 
 
 class Moderation(commands.Cog):
-    def __init__(self, bot: Bot):
+    def __init__(self, bot: AutoShardedBot):
         self.bot = bot
 
     @commands.slash_command(name="mod", description="對成員的管理操作")
@@ -109,15 +105,17 @@ class Moderation(commands.Cog):
         input_type=SlashCommandOptionType.user,
         name="user",
         description="要進行管理操作的目標，與 user_id 互斥",
-        required=False
+        required=False,
     )
     @option(
         input_type=SlashCommandOptionType.string,
         name="user_id",
         description="要進行管理操作的目標，與 user 互斥",
-        required=False
+        required=False,
     )
-    async def mod(self, interaction: Interaction, user: Union[User, Member] = None, user_id: str = None):
+    async def mod(
+        self, interaction: Interaction, user: Union[User, Member] = None, user_id: str = None
+    ):
         if user is None and user_id is None:
             await interaction.response.send_message("❌ 請提供 user 或 user_id")
 
@@ -133,13 +131,17 @@ class Moderation(commands.Cog):
 
         await interaction.response.send_message(
             embed=Embed(
-                color=0x2b2d31,
-                title="管理操作",
-                description=f"請選擇要對 {user.__str__()} 進行的管理操作"
+                color=0x2B2D31, title="管理操作", description=f"請選擇要對 {user.__str__()} 進行的管理操作"
             ),
-            view=ModerationView(user)
+            view=ModerationView(user),
         )
 
 
-def setup(bot):
+def setup(bot: AutoShardedBot) -> None:
+    """
+    The setup function for the cog.
+
+    :param bot: The bot instance.
+    :type bot: AutoShardedBot
+    """
     bot.add_cog(Moderation(bot))
